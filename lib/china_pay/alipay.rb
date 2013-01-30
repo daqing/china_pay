@@ -9,12 +9,12 @@ module ChinaPay
         SIGN_TYPE_MD5 = 'MD5'
 
         GATEWAY_URL = 'https://mapi.alipay.com/gateway.do'
-        
+
         ATTR_REQUIRED = [:service, :partner, :_input_charset,
           :sign_type, :sign, :notify_url, :return_url,
           :out_trade_no, :subject, :payment_type, :seller_email
         ]
-        
+
       end
 
       class DirectPay < Base
@@ -55,7 +55,7 @@ module ChinaPay
           if lost_attributes.any?
             raise "the following keys are lost: #{lost_attributes.inspect}"
           end
-          
+
           uri = URI(GATEWAY_URL)
           uri.query = URI.encode_www_form(request_params.sort)
 
