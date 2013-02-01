@@ -1,14 +1,17 @@
 # encoding: utf-8
 require 'digest'
+require 'uri'
+require 'net/http'
 
 module ChinaPay
   module Alipay
+    GATEWAY_URL = 'https://mapi.alipay.com/gateway.do'
+
     module Product
       class Base
         DEFAULT_CHARSET = 'utf-8'
         SIGN_TYPE_MD5 = 'MD5'
 
-        GATEWAY_URL = 'https://mapi.alipay.com/gateway.do'
 
         ATTR_REQUIRED = [:service, :partner, :_input_charset,
           :sign_type, :sign, :notify_url, :return_url,
@@ -141,7 +144,6 @@ module ChinaPay
       def direct_pay
         Product::DirectPay.new(self)
       end
-
     end
 
     class Merchant
@@ -156,6 +158,30 @@ module ChinaPay
         order = Order.new(order_id, subject, description)
         order.merchant = self
         order
+      end
+    end
+
+    class Notification
+      def initialize(partner, notification_id)
+        @partner = partner
+        @notification_id = notification_id
+      end
+
+      def valid?
+        uri = URI(GATEWAY_URL)
+        params = {
+          :service => :notify_verify,
+          :partner => @partner,
+          :notify_id => @notification_id
+        }
+        uri.query = params.map {|k, v| "#{k}=#{URI.escape(v.to_s)}"}.join('&')
+
+        Net::HTTP.start(uri.host, uri.port, :use_ssl => true) do |http|
+          req = Net::HTTP::Get.new uri.request_uri
+
+          response = http.request(req)
+          response.body == 'true'
+        end
       end
     end
   end
