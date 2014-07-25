@@ -42,8 +42,8 @@ module ChinaPay
           self
         end
 
-        def extra_params(params)
-          @extra_params = params
+        def extra_params(param_str)
+          @params[:extra_common_param] = param_str
           self
         end
 
