@@ -14,7 +14,7 @@ module ChinaPay
 
 
         ATTR_REQUIRED = [:service, :partner, :_input_charset,
-          :sign_type, :sign, :notify_url, :return_url,
+          :sign_type, :sign,
           :out_trade_no, :subject, :payment_type, :seller_email
         ]
 
